@@ -1,27 +1,27 @@
 from questions import QUESTIONS
-
+import random
 
 def isAnswerCorrect(question, answer):
-
-    '''
-    :param question: question (Type JSON)
-    :param answer:   user's choice for the answer (Type INT)
-    :return:
-        True if the answer is correct
-        False if the answer is incorrect
-    '''
-
-    return True if answer == 2 else False      #remove this
+    if question["answer"]==answer:
+        return True
+    else:
+        return False
 
 
 def lifeLine(ques):
 
-    '''
-    :param ques: The question for which the lifeline is asked for. (Type JSON)
-    :return: delete the key for two incorrect options and return the new ques value. (Type JSON)
-    '''
+    count = 0
+    options = [1,2,3,4]
+    ans = options.pop(ques["answer"]-1)
+    print(options)
+    return random.choice(options)
+   
 
 
+    
+        
+    
+currentques=0
 def kbc():
     '''
         Rules to play KBC:
@@ -47,28 +47,64 @@ def kbc():
     #  Display a welcome message only once to the user at the start of the game.
     #  For each question, display the prize won until now and available life line.
     # For now, the below code works for only one question without LIFE-LINE and QUIT checks
+    correctoptions ={"1","2","3","4","lifeline","quit"}
+    lifelines=1
+    while True:
+        global currentques
+        print(f'\tQuestion {currentques+1}: {QUESTIONS[currentques]["name"]}' )
+        print(f'\t\tOptions:')
+        print(f'\t\t\tOption 1: {QUESTIONS[currentques]["option1"]}')
+        print(f'\t\t\tOption 2: {QUESTIONS[currentques]["option2"]}')
+        print(f'\t\t\tOption 3: {QUESTIONS[currentques]["option3"]}')
+        print(f'\t\t\tOption 4: {QUESTIONS[currentques]["option4"]}')
+        ans = input('Your choice ( 1-4 ) : ')
+        if ans.lower()=="quit":
+            if currentques:
+                print(f"Thanks for playing you have won till {QUESTIONS[currentques-1]['money']}")
+                break
+            else:
+                print("Thanks for playing you have won till 0")
+        if ans.lower() in correctoptions:
+            if ans.lower()=="lifeline" and lifelines:
+                lifelines-=1
+                ques_opt = lifeLine(QUESTIONS[currentques])
+                answer = QUESTIONS[currentques]["answer"]
+                
+                if ques_opt<QUESTIONS[currentques]["answer"]:
+                    print(f'\tQuestion {currentques+1}: {QUESTIONS[currentques]["name"]}' )
+                    print(f'\t\tOptions:')
+                    print(f'\t\t\tOption {ques_opt}: {QUESTIONS[currentques]["option"+str(ques_opt)]}')
+                    print(f'\t\t\tOption {answer}: {QUESTIONS[currentques]["option"+str(answer)]}')
+                    ans=input()
+                else:
+                        print(f'\tQuestion {currentques+1}: {QUESTIONS[currentques]["name"]}' )
+                        print(f'\t\tOptions:')
+                        print(f'\t\t\tOption {answer}: {QUESTIONS[currentques]["option"+str(answer)]}')
+                        print(f'\t\t\tOption {ques_opt}: {QUESTIONS[currentques]["option"+str(ques_opt)]}')
+                        ans=input()
+            elif ans.lower()=="lifeline" and lifelines<1:
+                print("Lifeline already used!")
+                continue
+                
 
-    print(f'\tQuestion 1: {QUESTIONS[0]["name"]}' )
-    print(f'\t\tOptions:')
-    print(f'\t\t\tOption 1: {QUESTIONS[0]["option1"]}')
-    print(f'\t\t\tOption 2: {QUESTIONS[0]["option2"]}')
-    print(f'\t\t\tOption 3: {QUESTIONS[0]["option3"]}')
-    print(f'\t\t\tOption 4: {QUESTIONS[0]["option4"]}')
-    ans = input('Your choice ( 1-4 ) : ')
-
-    # check for the input validations
-
-    if isAnswerCorrect(QUESTIONS[0], int(ans) ):
-        # print the total money won.
-        # See if the user has crossed a level, print that if yes
-        print('\nCorrect !')
-
-    else:
-        # end the game now.
-        # also print the correct answer
-        print('\nIncorrect !')
-
-    # print the total money won in the end.
-
+            if isAnswerCorrect(QUESTIONS[currentques], int(ans) ):
+                
+                print(f'You Won {QUESTIONS[currentques]["money"]} Rupees')
+                print('\nCorrect !')
+                currentques+=1
+            else:
+                
+                print('\nIncorrect ! Game Over You Win:',end="")
+                if currentques+1>5:
+                    print("10000")
+                elif currentques+1>11:
+                    print("3,20,000")
+                else:
+                    print("0")
+                break
+            
+        else:
+            print("\tInvalid input ! enter an input from 1-4 or lifeline or quit")
+    
 
 kbc()
